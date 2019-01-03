@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 const database = {users: [
     {
@@ -30,7 +32,8 @@ app.get('/', (req, res) => {
 app.post('/signin', (req, res) => {
     if (req.body.email === database.users[0].email && 
         req.body.password === database.users[0].password) {
-            res.json('success');
+            // res.json('success');
+            res.json(database.users[0]);
         } else {
             res.status(400).json('error signin');
         }
@@ -42,7 +45,7 @@ app.post('/register', (req, res) => {
         id: '2',
         name: name,
         email: email,
-        password: password,
+        // password: password,
         entries: 0,
         joined: new Date() 
     });
@@ -80,6 +83,6 @@ app.put('/image', (req, res) => {
 /image --> PUT = user
 */
 
-app.listen(3000, () => {
+app.listen(3001, () => {
     console.log('Server is listening on port 3000');
 });
