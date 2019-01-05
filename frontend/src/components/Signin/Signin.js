@@ -18,7 +18,7 @@ class Signin extends React.Component {
   };
 
   onSubmitSignIn = () => {
-    console.log(this.state);
+    // console.log(this.state);
     fetch('http://localhost:3001/signin', {
       method: 'post',
       headers: { 'content-Type': 'application/json' },
@@ -27,11 +27,15 @@ class Signin extends React.Component {
         password: this.state.signInPassword
       })
     })
+    // response may be user (if success) or string (for example 'wrong credentials', if error)
       .then(res => res.json())
       .then(user => {
         // if (data === 'success') {
         //   this.props.onRouteChange('home');
         // }
+
+        // if error response will be a string
+        // Boolean(any string) - true
         if (user.id) {
           this.props.loadUser(user);
           this.props.onRouteChange('home');

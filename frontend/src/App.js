@@ -26,23 +26,26 @@ const particlesOptions = {
   }
 };
 
+const initialState = {
+  input: '',
+  imageUrl: '',
+  box: {},
+  route: 'signin',
+  isSignedIn: false,
+  user: {
+    id: '',
+    name: '',
+    email: '',
+    entries: 0,
+    joined: ''
+  }
+};
+
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      input: '',
-      imageUrl: '',
-      box: {},
-      route: 'signin',
-      isSignedIn: false,
-      user: {
-        id: '',
-        name: '',
-        email: '',
-        entries: 0,
-        joined: ''
-      }
-    };
+    this.state = initialState;
+
   }
 
   loadUser = data => {
@@ -65,11 +68,11 @@ class App extends Component {
 
   calculateFaceLocation = data => {
     const coorFace = data.outputs[0].data.regions[0].region_info.bounding_box;
-    console.log(coorFace);
+    // console.log(coorFace);
     const image = document.getElementById("inputimg");
     const width = Number(image.width);
     const height = Number(image.height);
-    console.log(width, height);
+    // console.log(width, height);
     return {
       leftCol: coorFace.left_col * width,
       rightCol: width - coorFace.right_col * width,
@@ -89,7 +92,6 @@ class App extends Component {
   };
 
   onPictureSubmit = () => {
-    console.log("click");
     this.setState({ imageUrl: this.state.input });
     // https://media.glamour.com/photos/5a425fd3b6bcee68da9f86f8/master/w_644,c_limit/best-face-oil.png
     // https://static.seattletimes.com/wp-content/uploads/2018/10/90a2c67c-ba17-11e8-b2d9-c270ab1caed2-1020x776.jpg
@@ -99,27 +101,26 @@ class App extends Component {
         if (response) {
           fetch('http://localhost:3001/image', {
             method: 'put',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               id: this.state.user.id
             })
           })
             .then(resp => resp.json())
-            .then(count => {
-              this.setState(Object.assign(this.state.user, { entries: count }));
-            });
+            .then(count => this.setState(Object.assign(this.state.user, { entries: count })) )
+            .catch(console.log);
         }
         this.displayFaceBox(this.calculateFaceLocation(response));
-      }
-      )
+      })
       .catch(err => console.log(err));
   };
 
   onRouteChange = route => {
     if (route === 'signin') {
-      this.setState({ isSignedIn: false })
+      this.setState({ isSignedIn: false });
+      this.setState(initialState);
     } else if (route === 'home') {
-      this.setState({ isSignedIn: true })
+      this.setState({ isSignedIn: true });
     }
     this.setState({ route: route });
   };
