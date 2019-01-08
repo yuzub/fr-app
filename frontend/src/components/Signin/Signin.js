@@ -20,6 +20,7 @@ class Signin extends React.Component {
   onSubmitSignIn = () => {
     // console.log(this.state);
     fetch('http://localhost:3001/signin', {
+    // fetch('https://morning-brushlands-32637.herokuapp.com/signin', {
       method: 'post',
       headers: { 'content-Type': 'application/json' },
       body: JSON.stringify({
@@ -39,6 +40,8 @@ class Signin extends React.Component {
         if (user.id) {
           this.props.loadUser(user);
           this.props.onRouteChange('home');
+        } else {
+          alert(user);
         }
 
       });
@@ -58,7 +61,7 @@ class Signin extends React.Component {
               </div>
               <div className="mv3">
                 <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
-                <input onChange={this.onPasswordChange} className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" type="password" name="password" id="password" />
+                <input onChange={this.onPasswordChange} className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" type="password" name="password" id="password" required />
               </div>
             </fieldset>
             <div className="">

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
 import Particles from "react-particles-js";
-import Clarifai from "clarifai";
 import Navigation from "./components/Navigation/Navigation";
 import Signin from "./components/Signin/Signin";
 import Register from "./components/Register/Register";
@@ -9,10 +8,6 @@ import Logo from "./components/Logo/Logo";
 import Rank from "./components/Rank/Rank";
 import ImageLinkForm from "./components/ImageLinkForm/ImageLinkForm";
 import FaceRecognition from "./components/FaceRecognition/FaceRecognition";
-
-const app = new Clarifai.App({
-  apiKey: "413e15c29c194e00b01158d0c6ecdd7e"
-});
 
 const particlesOptions = {
   particles: {
@@ -82,24 +77,38 @@ class App extends Component {
   };
 
   displayFaceBox = box => {
-    console.log(box);
+    // console.log(box);
     this.setState({ box: box });
   };
 
   onInputChange = event => {
-    console.log(event.target.value);
+    // console.log(event.target.value);
     this.setState({ input: event.target.value });
   };
 
   onPictureSubmit = () => {
     this.setState({ imageUrl: this.state.input });
+    if (!this.state.input) {
+      return alert('input right image URL');
+    }
+    
+    // examples of image URL
     // https://media.glamour.com/photos/5a425fd3b6bcee68da9f86f8/master/w_644,c_limit/best-face-oil.png
     // https://static.seattletimes.com/wp-content/uploads/2018/10/90a2c67c-ba17-11e8-b2d9-c270ab1caed2-1020x776.jpg
-    app.models
-      .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+    
+    fetch('http://localhost:3001/imageurl', {
+      // fetch('https://morning-brushlands-32637.herokuapp.com/imageurl', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        input: this.state.input
+      })
+    })
+      .then(resp => resp.json())
       .then(response => {
         if (response) {
           fetch('http://localhost:3001/image', {
+            // fetch('https://morning-brushlands-32637.herokuapp.com/image', {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -107,7 +116,7 @@ class App extends Component {
             })
           })
             .then(resp => resp.json())
-            .then(count => this.setState(Object.assign(this.state.user, { entries: count })) )
+            .then(count => this.setState(Object.assign(this.state.user, { entries: count })))
             .catch(console.log);
         }
         this.displayFaceBox(this.calculateFaceLocation(response));
@@ -117,7 +126,6 @@ class App extends Component {
 
   onRouteChange = route => {
     if (route === 'signin') {
-      this.setState({ isSignedIn: false });
       this.setState(initialState);
     } else if (route === 'home') {
       this.setState({ isSignedIn: true });
